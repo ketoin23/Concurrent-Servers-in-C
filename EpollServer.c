@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/select.h>
+#include <sys/epoll.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -159,7 +159,7 @@ int main(int argc, char** argv) {
 		int nready = epoll_wait(epollfd, events, MAXFDS, -1);
 
 		for(int i = 0; i < nready; i++) {
-			if(events[i] & EPOLLERR) {
+			if(events[i].events & EPOLLERR) {
 				perror_die("epoll_wait returned EPOLLERR");
 			}
 
@@ -179,7 +179,7 @@ int main(int argc, char** argv) {
 		        		die("socket (%d) >= MAXFDS (%d)", newsockfd, MAXFDS);
 		        	}
 
-		        	fd_status_t = on_peer_connected(newsockfd, &peer_addr, peer_addr_len);
+		        	fd_status_t status = on_peer_connected(newsockfd, &peer_addr, peer_addr_len);
 		        	struct epoll_event event = {0};
 		        	event.data.fd = newsockfd;
 		        	if(status.want_read) {
@@ -197,7 +197,7 @@ int main(int argc, char** argv) {
 				if(events[i].events & EPOLLIN) {
 					int fd = events[i].data.fd;
 					fd_status_t status = on_peer_ready_recv(fd);
-					struct epoll_event = {0};
+					struct epoll_event event = {0};
 					event.data.fd = fd;
 					if(status.want_read) {
 		        		event.events |= EPOLLIN;
@@ -217,7 +217,7 @@ int main(int argc, char** argv) {
 				} else if(events[i].events & EPOLLOUT) {
 					int fd = events[i].data.fd;
 					fd_status_t status = on_peer_ready_send(fd);
-					struct epoll_event = {0};
+					struct epoll_event event = {0};
 					event.data.fd = fd;
 					if(status.want_read) {
 		        		event.events |= EPOLLIN;
