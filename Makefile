@@ -2,6 +2,9 @@ CC = gcc
 CCFLAGS = -std=gnu99 -Wall -O3 -g -DNDEBUG -pthread
 LDFLAGS = -lpthread -pthread
 
+SelectServer: utils.c SelectServer.c
+	$(CC) $(CCFLAGS) $^ -o $@ $(LDFLAGS)
+
 ThreadedServer: utils.c ThreadedServer.c
 	$(CC) $(CCFLAGS) $^ -o $@ $(LDFLAGS)
 
