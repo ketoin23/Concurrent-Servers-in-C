@@ -2,6 +2,11 @@ CC = gcc
 CCFLAGS = -std=gnu99 -Wall -O3 -g -DNDEBUG -pthread
 LDFLAGS = -lpthread -pthread
 
+LDLIBUV = -luv -Wl,-rpath=/usr/local/lib
+
+libuvServer: utils.c libuvServer.c
+	$(CC) $(CCFLAGS) $^ -o $@ $(LDFLAGS) $(LDLIBUV)
+
 EpollServer: utils.c EpollServer.c
 	$(CC) $(CCFLAGS) $^ -o $@ $(LDFLAGS)
 
